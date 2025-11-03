@@ -5,7 +5,7 @@ import { supabase } from '@/lib/supabase'
 
 type Category = { id:number; code:number; name:string }
 type Product = {
-  id:number; category_id?: number; category_code?: number; sku:string|null; name:string;
+  id:number; category_id:number; sku:string|null; name:string;
   description:string|null; avg_cost:number|null; sale_price:number|null; stock:number|null;
   image_url:string|null
 }
@@ -18,13 +18,13 @@ export default function ProductsPage(){
 
   const load = async()=>{
     const { data: c, error: ec } = await supabase
-      .schema('core').from('categories')
+      .from('categories')
       .select('id,code,name').order('code')
     if(ec){ alert(ec.message); return }
     setCats((c||[]) as any)
 
     const { data: p, error: ep } = await supabase
-      .schema('core').from('products')
+      .from('products')
       .select('*').order('id', { ascending: false })
     if(ep){ alert(ep.message); return }
     setRows((p||[]) as any)
@@ -42,8 +42,8 @@ export default function ProductsPage(){
       image_url = data?.path
     }
 
-    const payload: any = {
-      category_id: Number(form.category_id), // αν ο πίνακας σου χρησιμοποιεί category_id
+    const payload = {
+      category_id: Number(form.category_id),
       name: form.name,
       description: form.description,
       avg_cost: Number(form.avg_cost),
@@ -52,7 +52,7 @@ export default function ProductsPage(){
       image_url
     }
 
-    const { error } = await supabase.schema('core').from('products').insert(payload)
+    const { error } = await supabase.from('products').insert(payload)
     if(error){ alert(error.message); return }
 
     setForm({category_id:'', name:'', description:'', avg_cost:'0', sale_price:'0', stock:'0'})
@@ -119,7 +119,7 @@ export default function ProductsPage(){
         </thead>
         <tbody>
           {rows.map(r=>{
-            const cat = categoriesById[String(r.category_id||'')]
+            const cat = categoriesById[String(r.category_id)]
             return (
               <tr key={r.id} style={{borderTop:'1px solid #eee'}}>
                 <td style={{padding:8}}>{r.sku}</td>
