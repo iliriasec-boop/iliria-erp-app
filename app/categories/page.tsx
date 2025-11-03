@@ -13,7 +13,6 @@ export default function CategoriesPage(){
 
   const load = async()=>{
     const { data, error } = await supabase
-      .schema('core')
       .from('categories')
       .select('*')
       .order('code')
@@ -26,7 +25,6 @@ export default function CategoriesPage(){
   const add = async()=>{
     if(!code || !name){ alert('Βάλε Κωδικό (01..99) και Όνομα'); return }
     const { error } = await supabase
-      .schema('core')
       .from('categories')
       .insert({ code: Number(code), name, description })
     if(error){ alert(error.message); return }
